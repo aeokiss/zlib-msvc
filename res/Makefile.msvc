@@ -1,0 +1,119 @@
+# -*- Makefile -*- for md5
+
+#### Start of system configuration section. ####
+
+# Flags that can be set on the nmake command line:
+#   DLL=1     for compiling a .dll with a stub .lib (default is a static .lib)
+#             Note that this works only with MFLAGS=-MD.
+#   MFLAGS={-ML|-MT|-MD} for defining the compilation model
+#     MFLAGS=-ML (the default)  Single-threaded, statically linked - libc.lib
+#     MFLAGS=-MT                Multi-threaded, statically linked  - libcmt.lib
+#     MFLAGS=-MD                Multi-threaded, dynamically linked - msvcrt.lib
+#   DEBUG=1   for compiling with debugging information
+#   PREFIX=Some\Directory       Base directory for installation
+#   IIPREFIX=Some\\Directory    Same thing with doubled backslashes
+DLL=0
+!if !defined(DEBUG)
+DEBUG=0
+!endif
+######################################################################################
+#
+# Makefile.msvc
+#
+# Created by Hoonjoo Kang <aeokiss@gmail.com>
+#
+######################################################################################
+
+!if !defined(DEBUG)
+DEBUG=0
+!endif
+!if !defined(MFLAGS)
+MFLAGS=-MT
+!endif
+
+######################################################################################
+# 컴파일러 환경 설정
+######################################################################################
+CC = cl
+WARN_CFLAGS = -W3
+PICFLAGS =
+
+!if $(DEBUG)
+OPTIMFLAGS = /Od /EHsc /RTC1 /nologo /Zi
+DEBUGFLAGS = /D "WIN32" /D "_DEBUG" /D "_LIB" /D "_CRT_SECURE_NO_WARNINGS" /D "_MBCS"
+!else
+OPTIMFLAGS = /O2 /Oi /FD /EHsc /Gy /nologo /Zi
+DEBUGFLAGS = /D "WIN32" /D "NDEBUG" /D "_LIB" /D "_CRT_SECURE_NO_WARNINGS" /D "_MBCS"
+!endif
+
+CFLAGS = $(MFLAGS) $(WARN_CFLAGS) $(OPTIMFLAGS) $(DEBUGFLAGS)
+
+INCLUDES = -I. -I..\res
+
+AR = lib
+AR_FLAGS = /out:
+
+LN = copy
+RM = -del /Q
+
+######################################################################################
+# 라이브러리 및 실행파일 설정
+######################################################################################
+LIBTITLE = zlib
+LIBNAME = $(LIBTITLE).lib
+EXENAME1 = example
+EXENAME2 = minigzip
+
+OBJECTS = \
+	adler32.obj \
+	compress.obj \
+	crc32.obj \
+	deflate.obj \
+	gzclose.obj \
+	gzlib.obj \
+	gzread.obj \
+	gzwrite.obj \
+	infback.obj \
+	inffast.obj \
+	inflate.obj \
+	inftrees.obj \
+	trees.obj \
+	uncompr.obj \
+	zutil.obj
+
+all : $(OBJECTS) $(LIBNAME) $(EXENAME1) $(EXENAME2)
+
+######################################################################################
+# 소스 컴파일
+######################################################################################
+.c.obj :
+	$(CC) $(INCLUDES) $(CFLAGS) $(PICFLAGS) /c $*.c /Fo"$*" /Fd"$(LIBTITLE).pdb"
+
+######################################################################################
+# 라이브러리 생성
+######################################################################################
+$(LIBNAME) :
+	$(AR) $(AR_FLAGS)$(LIBNAME) $(OBJECTS) /NOLOGO /NODEFAULTLIB
+
+######################################################################################
+# 실행파일 생성
+######################################################################################
+$(EXENAME1) :
+	$(CC) $(INCLUDES) $(CFLAGS) /Fd"$(EXENAME1).pdb" test/$(EXENAME1).c $(LIBNAME)
+$(EXENAME2) :
+	$(CC) $(INCLUDES) $(CFLAGS) /Fd"$(EXENAME2).pdb" test/$(EXENAME2).c $(LIBNAME)
+
+clean : force
+	$(RM) *.obj
+	$(RM) test\*.obj
+	$(RM) *.lib
+	$(RM) *.exp
+	$(RM) *.dll
+	$(RM) *.pdb
+	$(RM) *.idb
+	$(RM) *.ilk
+	$(RM) *.exe
+
+reall : clean all
+
+force :
