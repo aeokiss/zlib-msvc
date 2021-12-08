@@ -2,10 +2,13 @@
 
 @call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars32.bat"
 
-cd zlib
+@set SrcDir=md5
+@set ResDir=res
 
-nmake -f ..\res\Makefile.msvc clean
-nmake -f ..\res\Makefile.msvc NO_NLS=1 MFLAGS=-MTd DEBUG=1
+cd %SrcDir%
+
+nmake -f ..\%ResDir%\Makefile.msvc clean
+nmake -f ..\%ResDir%\Makefile.msvc NO_NLS=1 MFLAGS=-MTd DEBUG=1
 
 cd ..
 
@@ -14,16 +17,16 @@ cd ..
 rmdir /S /Q %OutputLibDir%
 mkdir %OutputLibDir%
 
-copy zlib\zlib.lib %OutputLibDir%
-copy zlib\zlib.h %OutputLibDir%
-copy zlib\zconf.h %OutputLibDir%
-copy zlib\*.exe %OutputLibDir%
-copy zlib\*.pdb %OutputLibDir%
+copy %SrcDir%\zlib.lib %OutputLibDir%
+copy %SrcDir%\zlib.h %OutputLibDir%
+copy %SrcDir%\zconf.h %OutputLibDir%
+copy %SrcDir%\*.exe %OutputLibDir%
+copy %SrcDir%\*.pdb %OutputLibDir%
 
-cd zlib
+cd %SrcDir%
 
-nmake -f ..\res\Makefile.msvc clean
-nmake -f ..\res\Makefile.msvc NO_NLS=1 MFLAGS=-MT
+nmake -f ..\%ResDir%\Makefile.msvc clean
+nmake -f ..\%ResDir%\Makefile.msvc NO_NLS=1 MFLAGS=-MT
 
 cd ..
 
@@ -32,10 +35,10 @@ cd ..
 rmdir /S /Q %OutputLibDir%
 mkdir %OutputLibDir%
 
-copy zlib\zlib.lib %OutputLibDir%
-copy zlib\zlib.h %OutputLibDir%
-copy zlib\zconf.h %OutputLibDir%
-copy zlib\*.exe %OutputLibDir%
-copy zlib\*.pdb %OutputLibDir%
+copy %SrcDir%\zlib.lib %OutputLibDir%
+copy %SrcDir%\zlib.h %OutputLibDir%
+copy %SrcDir%\zconf.h %OutputLibDir%
+copy %SrcDir%\*.exe %OutputLibDir%
+copy %SrcDir%\*.pdb %OutputLibDir%
 
 pause
